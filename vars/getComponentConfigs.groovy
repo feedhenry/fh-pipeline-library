@@ -1,12 +1,15 @@
+#!/usr/bin/groovy
 import groovy.json.JsonSlurperClassic
-import org.feedhenry.Utils
 
 def call(componentConfigs, configGitRepo, configGitRef) {
     node {
         step([$class: 'WsCleanup'])
-        def utils = new Utils()
 
-        utils.checkoutGitRepo(configGitRepo, configGitRef, 'product_releases')
+        checkoutGitRepo {
+            repoUrl = configGitRepo
+            branch = configGitRef
+            targetDir = 'product_releases'
+        }
 
         dir('product_releases') {
             componentsJson = readFile 'COMPONENTS.json'

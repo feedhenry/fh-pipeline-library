@@ -17,24 +17,6 @@ def mapToList(depmap) {
     dlist
 }
 
-def checkoutGitRepo(repoUrl, branch, targetDir = '.') {
-    checkout([$class: 'GitSCM',
-            branches: [[name: branch]],
-            doGenerateSubmoduleConfigurations: false,
-            extensions: [
-                    [$class: 'RelativeTargetDirectory',
-                            relativeTargetDir: targetDir]
-            ],
-            submoduleCfg: [],
-            userRemoteConfigs: [
-                    [
-                            credentialsId: 'jenkinsgithub',
-                            url: repoUrl
-                    ]
-            ]
-    ])
-}
-
 def getArtifactsDir(name) {
     return "${name}-artifacts"
 }
