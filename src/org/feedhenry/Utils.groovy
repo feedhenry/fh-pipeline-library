@@ -17,6 +17,14 @@ def mapToList(depmap) {
     dlist
 }
 
+def mapToOptionsString(map) {
+    def optionsArray = []
+    for (def o in mapToList(map)) {
+        optionsArray << "${o[0]}:${o[1]}"
+    }
+    optionsArray.join(" ")
+}
+
 def getArtifactsDir(name) {
     return "${name}-artifacts"
 }
