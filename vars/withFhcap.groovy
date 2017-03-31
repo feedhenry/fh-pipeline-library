@@ -2,6 +2,8 @@
 
 def call(body) {
 
+    print "Deprecated, use fhcapNode instead!"
+
     node('ruby-fhcap') {
 
         step([$class: 'WsCleanup'])
