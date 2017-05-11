@@ -7,10 +7,11 @@ def call(body) {
     body()
 
     def name = config.name
-    def cmd = config.cmd ?: 'fh:dist --only-bundle-deps'
+    def distCmd = config.distCmd ?: 'fh:dist --only-bundle-deps'
 
-    sh "npm install grunt-cli -g"
-    sh "grunt ${cmd}"
+    gruntCmd {
+        cmd = distCmd
+    }
 
     archiveArtifacts "dist/${name}*.tar.gz"
 }
