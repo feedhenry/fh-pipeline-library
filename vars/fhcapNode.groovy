@@ -2,9 +2,12 @@
 
 def call(Map parameters = [:], body) {
 
-    def label = parameters.get('label', 'ruby-fhcap')
+    def labels = [parameters.get('label','ruby-fhcap')]
+    labels += parameters.get('labels',[]) 
+    def provider = parameters.get('provider')  ?: [:]
+    labels += provider.get('labels',[])
 
-    node(label) {
+    node(withLabels(labels)) {
 
         def installLatest = parameters.get('installLatest', false)
         def credentialsId = parameters.get('credentialsId', 'jenkinsgithub')
