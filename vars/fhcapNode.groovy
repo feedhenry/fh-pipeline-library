@@ -21,6 +21,8 @@ def call(Map parameters = [:], body) {
         step([$class: 'WsCleanup'])
         sshagent([credentialsId]) {
 
+            sh "rm -rf ${HOME}/fhcap"
+
             if (gitUserName && gitUserEmail) {
                 sh "git config --global user.name \"${gitUserName}\""
                 sh "git config --global user.email \"${gitUserEmail}\""
@@ -47,7 +49,7 @@ def call(Map parameters = [:], body) {
                 env.PATH = "${PATH}:/home/jenkins/bin"
                 env.FHCAP_CFG_FILE = configFile
 
-                sh "fhcap setup --repos-dir ${WORKSPACE} --fh-src-dir ${WORKSPACE}"
+                sh "yes | fhcap setup --repos-dir ${WORKSPACE} --fh-src-dir ${WORKSPACE}"
 
                 if (fhcapRepos) {
                     fhcapRepoAddBatch {
