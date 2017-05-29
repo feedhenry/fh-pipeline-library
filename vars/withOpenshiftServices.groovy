@@ -82,6 +82,11 @@ spec:
       - image: docker.io/mongo:3
         imagePullPolicy: IfNotPresent
         name: mongodb
+        env: 
+          - name: MONGO_INITDB_ROOT_USERNAME
+            value: admin
+          - name: MONGO_INITDB_ROOT_PASSWORD
+            value: admin
         ports:
         - containerPort: 27017
           protocol: TCP
