@@ -10,5 +10,6 @@ def call(body) {
         npm install --production
         npm ls
         npm install
+        npm install grunt-cli -g
       '''
 }
