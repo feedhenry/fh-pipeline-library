@@ -36,7 +36,7 @@ def createOpenshiftResources(services, names) {
 }
 
 String sanitizeObjectName(s) {
-    s.replace('_', '-').toLowerCase()
+    s.replace('_', '-').toLowerCase().reverse().take(63).reverse()
 }
 
 Map<String, String> getNames(services) {
