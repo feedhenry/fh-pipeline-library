@@ -1,4 +1,5 @@
 #!/usr/bin/groovy
+
 import org.feedhenry.Utils
 
 def call(name, sha1, projectName) {
@@ -12,11 +13,14 @@ def call(name, sha1, projectName) {
                 parameters: "name=${name},sha1=${sha1}",
                 projectName: projectName,
                 selector: [
-                        $class: 'StatusBuildSelector', stable: false],
+                        $class: 'StatusBuildSelector', stable: true],
                 target: utils.getArtifactsDir(name)
         ])
         dir(utils.getArtifactsDir(name)) {
-            writeFile file: 'sha1.txt', text: sha1
+            def buildInfoFileName = utils.getBuildInfoFileName()
+            if (!fileExists(buildInfoFileName)) {
+                error "${buildInfoFileName} does not exist in the artifacts of ${name}"
+            }
         }
         stash includes: "${utils.getArtifactsDir(name)}/", name: name
     }
