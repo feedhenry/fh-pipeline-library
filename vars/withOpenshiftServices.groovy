@@ -29,14 +29,14 @@ def createOpenshiftResources(services, names) {
         jobs[name] = {
             openshiftCreateResource(getDeploymentConfigYaml(service, name))
             openshiftCreateResource(getServiceYaml(service, name))
-            openshiftScale deploymentConfig: name,  replicaCount: 1, verifyReplicaCount: 1
+            openshiftScale deploymentConfig: name,  replicaCount: 1, verifyReplicaCount: 1, waitTime: 600000
         }
     }
     parallel jobs
 }
 
 String sanitizeObjectName(s) {
-    s.replace('_', '-').toLowerCase()
+    s.replace('_', '-').toLowerCase().reverse().take(63).reverse()
 }
 
 Map<String, String> getNames(services) {

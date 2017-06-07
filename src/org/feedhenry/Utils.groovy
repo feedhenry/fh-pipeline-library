@@ -9,6 +9,10 @@ def getReleaseTag(version) {
     "rh-release-${version}-rc1"
 }
 
+def getBuildInfoFileName() {
+    'build-info.json'
+}
+
 def mapToList(depmap) {
     def dlist = []
     for (entry in depmap) {
