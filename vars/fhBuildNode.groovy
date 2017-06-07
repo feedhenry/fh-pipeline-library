@@ -13,8 +13,17 @@ def call(Map parameters = [:], body) {
     node(withLabels(labels)) {
         step([$class: 'WsCleanup'])
 
+        if(params.name) {
+            currentBuild.displayName = "${currentBuild.displayName} ${params.name}"
+        }
+
         stage ('Checkout') {
             checkout scm
+        }
+
+        if(params.name) {
+            def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+            currentBuild.description = gitCommit
         }
 
         //Use short git commit hash value for component build number
