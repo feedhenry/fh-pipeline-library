@@ -13,15 +13,15 @@ def call(Map parameters = [:], body) {
     node(withLabels(labels)) {
         step([$class: 'WsCleanup'])
 
-        if(params.name) {
-            currentBuild.displayName = "${currentBuild.displayName} ${params.name}"
+        if(params.componentName) {
+            currentBuild.displayName = "${currentBuild.displayName} ${params.componentName}"
         }
 
         stage ('Checkout') {
             checkout scm
         }
 
-        if(params.name) {
+        if(params.componentName) {
             def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             currentBuild.description = gitCommit
         }
