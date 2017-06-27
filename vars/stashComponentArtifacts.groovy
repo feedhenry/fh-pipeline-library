@@ -10,7 +10,7 @@ def call(name, sha1, projectName) {
         step([$class: 'CopyArtifact',
                 flatten: true,
                 fingerprintArtifacts: true,
-                parameters: "name=${name},sha1=${sha1}",
+                parameters: "componentName=${name},sha1=${sha1}",
                 projectName: projectName,
                 selector: [
                         $class: 'StatusBuildSelector', stable: true],
