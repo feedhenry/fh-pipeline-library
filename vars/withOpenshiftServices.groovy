@@ -94,6 +94,16 @@ spec:
         volumeMounts:
         - mountPath: /data/db
           name: data
+        readinessProbe:
+          exec:
+            command:
+              - /bin/sh
+              - '-ic'
+              - echo 'db.stats().ok' | mongo 127.0.0.1:27017/admin
+          timeoutSeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       volumes:
