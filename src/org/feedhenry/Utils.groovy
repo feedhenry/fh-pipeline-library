@@ -1,6 +1,8 @@
 #!/usr/bin/groovy
 package org.feedhenry
 
+import java.text.SimpleDateFormat
+
 def getReleaseBranch(version) {
     "RH_v${version}"
 }
@@ -35,4 +37,10 @@ def getArtifactsDir(name) {
 
 def gitRepoIsDirty(untrackedFiles='no') {
     return sh(returnStdout: true, script: "git status --porcelain --untracked-files=${untrackedFiles}").trim()
+}
+
+static Closure getDate() {
+    Date now = new Date()
+    SimpleDateFormat yearMonthDateHourMin = new SimpleDateFormat("yyyyMMddHHmm")
+    return yearMonthDateHourMin.format(now)
 }
