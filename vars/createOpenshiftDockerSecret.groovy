@@ -1,19 +1,19 @@
-Closure call(String username, String password, String email) {
+def call(String dockerServer, String username, String password, String email, String secretName='dockerhub') {
     openshift.withCluster() {
 
-        if (openshift.selector('secrets').names().contains('secret/dockerhub')) {
-            openshift.selector('secret/dockerhub').delete()
+        if (openshift.selector('secrets').names().contains("secret/${secretName}" as String)) {
+            openshift.selector("secret/${secretName}").delete()
         }
 
         openshift.secrets(
             "new-dockercfg",
-            "dockerhub",
-            "--docker-server=docker.io/fhwendy",
+            secretName,
+            "--docker-server=${dockerServer}",
             "--docker-username=${username}",
             "--docker-password=${password}",
             "--docker-email=${email}"
         )
 
-        openshift.secrets('link', 'builder', 'dockerhub')
+        openshift.secrets('link', 'builder', secretName)
     }
 }
