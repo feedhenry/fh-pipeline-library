@@ -5,8 +5,8 @@ def getReleaseBranch(version) {
     "RH_v${version}"
 }
 
-def getReleaseTag(version) {
-    "rh-release-${version}-rc1"
+def getReleaseTag(version, candidate) {
+    "rh-release-${version}-${candidate}"
 }
 
 def getBuildInfoFileName() {
