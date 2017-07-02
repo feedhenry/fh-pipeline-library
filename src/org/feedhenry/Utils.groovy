@@ -4,7 +4,8 @@ package org.feedhenry
 import java.text.SimpleDateFormat
 
 static def getReleaseBranch(version) {
-    "RH_v${version}"
+    def versionParts = version.tokenize(".")
+    return "RH_v${versionParts[0]}.${versionParts[1]}"
 }
 
 static def getReleaseTag(version) {
