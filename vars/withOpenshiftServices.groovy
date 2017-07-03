@@ -1,4 +1,4 @@
-def call(services, body) {
+def call(List<String> services, Closure body) {
     List<String> names = getNames(services)
     try {
         createOpenshiftResources(services, names)
@@ -10,7 +10,7 @@ def call(services, body) {
     }
 }
 
-def cleanup(names) {
+def cleanup(List<String> names) {
     for (int i = 0; i < names.size(); i++) {
         String resourceName = names[0]
         openshiftScale deploymentConfig: resourceName,  replicaCount: 0
@@ -21,8 +21,8 @@ def cleanup(names) {
     }
 }
 
-def createOpenshiftResources(services, names) {
-    Map jobs = [:]
+def createOpenshiftResources(List<String> services, List<String> names) {
+    Map<String, Closure> jobs = [:]
     for (int i = 0; i < services.size(); i++) {
         String service = services[i]
         String name = names[i]
@@ -35,7 +35,7 @@ def createOpenshiftResources(services, names) {
     parallel jobs
 }
 
-String sanitizeObjectName(s) {
+String sanitizeObjectName(String s) {
     s.replace('_', '-')
             .toLowerCase()
             .reverse()
@@ -45,7 +45,7 @@ String sanitizeObjectName(s) {
             .replaceAll("^-+", "")
 }
 
-Map<String, String> getNames(services) {
+Map<String, String> getNames(List<String> services) {
     List<String> names = []
     for (int i = 0; i < services.size(); i++) {
         names += sanitizeObjectName("${env.BUILD_TAG}-${services[i]}")
@@ -53,7 +53,7 @@ Map<String, String> getNames(services) {
     return names
 }
 
-List<String> env(services, names) {
+List<String> env(List<String> services, List<String> names) {
     List<String> out = []
     if (services.contains('mongodb')) {
         out.add("MONGODB_HOST=${names[services.indexOf('mongodb')]}")
@@ -61,7 +61,7 @@ List<String> env(services, names) {
     return out
 }
 
-String getDeploymentConfigYaml(service, name) {
+String getDeploymentConfigYaml(String service, String name) {
     switch (service) {
         case 'mongodb':
         return """
@@ -115,7 +115,7 @@ spec:
     }
 }
 
-String getServiceYaml(service, name) {
+String getServiceYaml(String service, String name) {
     switch (service) {
         case 'mongodb':
         return """
