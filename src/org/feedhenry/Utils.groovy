@@ -1,19 +1,21 @@
 #!/usr/bin/groovy
 package org.feedhenry
 
-def getReleaseBranch(version) {
+import java.text.SimpleDateFormat
+
+static def getReleaseBranch(version) {
     "RH_v${version}"
 }
 
-def getReleaseTag(version) {
+static def getReleaseTag(version) {
     "rh-release-${version}-rc1"
 }
 
-def getBuildInfoFileName() {
+static def getBuildInfoFileName() {
     'build-info.json'
 }
 
-def mapToList(depmap) {
+static def mapToList(depmap) {
     def dlist = []
     for (entry in depmap) {
         dlist.add([entry.key, entry.value])
@@ -21,7 +23,7 @@ def mapToList(depmap) {
     dlist
 }
 
-def mapToOptionsString(map) {
+static def mapToOptionsString(map) {
     def optionsArray = []
     for (def o in mapToList(map)) {
         optionsArray << "${o[0]}:${o[1]}"
@@ -29,10 +31,16 @@ def mapToOptionsString(map) {
     optionsArray.join(" ")
 }
 
-def getArtifactsDir(name) {
+static def getArtifactsDir(name) {
     return "${name}-artifacts"
 }
 
-def gitRepoIsDirty(untrackedFiles='no') {
+static def gitRepoIsDirty(untrackedFiles='no') {
     return sh(returnStdout: true, script: "git status --porcelain --untracked-files=${untrackedFiles}").trim()
+}
+
+static def getDate() {
+    Date now = new Date()
+    SimpleDateFormat yearMonthDateHourMin = new SimpleDateFormat("yyyyMMddHHmm")
+    return yearMonthDateHourMin.format(now)
 }
