@@ -5,11 +5,11 @@ import java.text.SimpleDateFormat
 
 static def getReleaseBranch(version) {
     def versionParts = version.tokenize(".")
-    return "RH_v${versionParts[0]}.${versionParts[1]}"
+    return "FH-v${versionParts[0]}.${versionParts[1]}"
 }
 
 static def getReleaseTag(version, candidate) {
-    "rh-release-${version}-${candidate}"
+    "release-${version}-${candidate}"
 }
 
 static def getBuildInfoFileName() {
