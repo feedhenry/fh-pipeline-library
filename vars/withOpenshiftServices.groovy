@@ -30,9 +30,27 @@ def createOpenshiftResources(List<String> services, List<String> names) {
             openshiftCreateResource(getDeploymentConfigYaml(service, name))
             openshiftCreateResource(getServiceYaml(service, name))
             openshiftScale deploymentConfig: name,  replicaCount: 1, verifyReplicaCount: 1, waitTime: 600000
+            waitForServiceToBeReady service, name
         }
     }
     parallel jobs
+}
+
+def waitForServiceToBeReady(String service, String name) {
+    if (service == 'mongodb') {
+        writeFile(
+            file: 'checkMongo.sh',
+            text: "echo 'daves\ndaves()\n/' | curl -v telnet://${name}:27017/"
+        )
+        sh 'chmod +x checkMongo.sh'
+        timeout(5) {
+            waitUntil {
+                def xit = sh script: "./checkMongo.sh", returnStatus: true
+                return xit == 0
+            }
+        }
+        sh 'rm checkMongo.sh'
+    }
 }
 
 String sanitizeObjectName(String s) {
