@@ -15,5 +15,7 @@ def call(name, sha1, projectName, config) {
         jobParams << [$class: 'StringParameterValue', name: 'distCmd', value: distCmd]
     }
 
-    build job: projectName, parameters: jobParams
+    retry(2) {
+        build job: projectName, parameters: jobParams
+    }
 }
