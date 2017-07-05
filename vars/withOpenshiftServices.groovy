@@ -3,6 +3,7 @@ def call(List<String> services, Closure body) {
     try {
         createOpenshiftResources(services, names)
         withEnv(env(services, names)) {
+            sleep 60
             body()
         }
     } finally {
