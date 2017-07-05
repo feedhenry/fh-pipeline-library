@@ -36,7 +36,7 @@ static def getArtifactsDir(name) {
     return "${name}-artifacts"
 }
 
-static def gitRepoIsDirty(untrackedFiles='no') {
+def gitRepoIsDirty(untrackedFiles='no') {
     return sh(returnStdout: true, script: "git status --porcelain --untracked-files=${untrackedFiles}").trim()
 }
 
