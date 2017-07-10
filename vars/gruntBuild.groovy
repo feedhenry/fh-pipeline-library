@@ -7,7 +7,7 @@ def call(body) {
     body()
 
     def name = config.name
-    def distCmd = config.distCmd ?: 'fh:dist --only-bundle-deps'
+    def distCmd = config.distCmd ?: 'fh:dist'
 
     gruntCmd {
         cmd = distCmd
