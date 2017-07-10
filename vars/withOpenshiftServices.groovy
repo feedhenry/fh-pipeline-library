@@ -55,6 +55,7 @@ def waitForServiceToBeReady(String service, String name) {
 
 String sanitizeObjectName(String s) {
     s.replace('_', '-')
+            .replace('.', '-')
             .toLowerCase()
             .reverse()
             .take(23)
