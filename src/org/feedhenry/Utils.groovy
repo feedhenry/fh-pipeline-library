@@ -8,8 +8,12 @@ static def getReleaseBranch(version) {
     return "FH-v${versionParts[0]}.${versionParts[1]}"
 }
 
-static def getReleaseTag(version, candidate) {
-    "release-${version}-${candidate}"
+static def getReleaseTag(version, candidate=null) {
+    if(candidate) {
+        "release-${version}-${candidate}"
+    } else {
+        "release-${version}"
+    }
 }
 
 static def getBuildInfoFileName() {
