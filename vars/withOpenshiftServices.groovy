@@ -13,10 +13,36 @@ def call(List<String> services, Closure body) {
 def cleanup(List<String> names) {
     for (int i = 0; i < names.size(); i++) {
         String resourceName = names[0]
-        openshiftScale deploymentConfig: resourceName,  replicaCount: 0
-        openshift.withCluster() {
-            openshift.selector('svc', [name: resourceName]).delete()
-            openshift.selector('dc', [name: resourceName]).delete()
+
+        try {
+            retry (3) {
+                echo "[withOpenshiftServices] Attempting to scale down ${resourceName}"
+                openshiftScale deploymentConfig: resourceName,  replicaCount: 0
+            }
+        } catch (e) {
+            echo "[withOpenshiftServices] Failed to scale down ${resourceName} after 3 attempts"
+        }
+
+        try {
+            retry (3) {
+                echo "[withOpenshiftServices] Attempting to delete DC ${resourceName}"
+                openshift.withCluster() {
+                    openshift.selector('svc', [name: resourceName]).delete()
+                }
+            }
+        } catch (e) {
+            echo "[withOpenshiftServices] Failed to delete DC ${resourceName} after 3 attempts"
+        }
+
+        try {
+            retry (3) {
+                echo "[withOpenshiftServices] Attempting to delete SVC ${resourceName}"
+                openshift.withCluster() {
+                    openshift.selector('dc', [name: resourceName]).delete()
+                }
+            }
+        } catch (e) {
+            echo "[withOpenshiftServices] Failed to delete SVC ${resourceName} after 3 attempts"
         }
     }
 }
@@ -55,13 +81,13 @@ def waitForServiceToBeReady(String service, String name) {
 
 String sanitizeObjectName(String s) {
     s.replace('_', '-')
-            .replace('.', '-')
-            .toLowerCase()
-            .reverse()
-            .take(23)
-            .replaceAll("^-+", "")
-            .reverse()
-            .replaceAll("^-+", "")
+        .replace('.', '-')
+        .toLowerCase()
+        .reverse()
+        .take(23)
+        .replaceAll("^-+", "")
+        .reverse()
+        .replaceAll("^-+", "")
 }
 
 Map<String, String> getNames(List<String> services) {
@@ -83,7 +109,7 @@ List<String> env(List<String> services, List<String> names) {
 String getDeploymentConfigYaml(String service, String name) {
     switch (service) {
         case 'mongodb':
-        return """
+            return """
 apiVersion: v1
 kind: DeploymentConfig
 metadata:
@@ -130,14 +156,14 @@ spec:
         name: data
 """
         default:
-        return ''
+            return ''
     }
 }
 
 String getServiceYaml(String service, String name) {
     switch (service) {
         case 'mongodb':
-        return """
+            return """
 apiVersion: v1
 kind: Service
 metadata:
@@ -154,6 +180,6 @@ spec:
   type: ClusterIP
 """
         default:
-        return ''
+            return ''
     }
 }
