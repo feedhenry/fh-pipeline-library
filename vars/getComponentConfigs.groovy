@@ -29,6 +29,7 @@ def call(componentConfigs, configGitRepo, configGitRef) {
                     componentConfigs[componentName]['cookbook'] = config['cookbook'] ?: componentName
                     componentConfigs[componentName]['buildType'] = config['buildType'] ?: 'node'
                     componentConfigs[componentName]['distCmd'] = config['distCmd']
+                    componentConfigs[componentName]['labels'] = config?.labels ?: {}
                     componentConfigs[componentName]['buildJobName'] = config['buildJobName'] ?: "build_any_jenkinsfile"
                     componentConfigs[componentName]['gitUrl'] = "git@github.com:${componentConfigs[componentName]['gitHubOrg']}/${componentConfigs[componentName]['repoName']}.git"
                     componentConfigs[componentName]['gitHubUrl'] = "https://github.com/${componentConfigs[componentName]['gitHubOrg']}/${componentConfigs[componentName]['repoName']}"
