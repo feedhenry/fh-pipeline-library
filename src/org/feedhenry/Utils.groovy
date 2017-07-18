@@ -49,15 +49,3 @@ static def getDate() {
     SimpleDateFormat yearMonthDateHourMin = new SimpleDateFormat("yyyyMMddHHmm")
     return yearMonthDateHourMin.format(now)
 }
-
-String doCurlCmd(url, httpMethod = 'GET', postData = null, credentialsId = 'githubautomatron') {
-    String ghStatusRaw = ''
-    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: credentialsId, usernameVariable: 'EMAIL', passwordVariable: 'TOKEN']]) {
-        def curlOptions = ['-s', "-X ${httpMethod}", "-H 'Accept: application/vnd.github.loki-preview+json'", "-H 'Authorization: token ${env.TOKEN}'"]
-        if(postData) {
-            curlOptions << "-d '${postData}'"
-        }
-        ghStatusRaw = sh(returnStdout: true, script: "curl ${curlOptions.join(' ')} ${url}").trim()
-    }
-    return ghStatusRaw
-}
