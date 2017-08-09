@@ -7,12 +7,15 @@ def call(body) {
     body.delegate = config
     body()
 
+    def noTags = config.noTags  ?: false
+    def shallow = config.shallow  ?: false
+
     checkout([$class: 'GitSCM',
             branches: [[name: config.branch]],
             doGenerateSubmoduleConfigurations: false,
             extensions: [
-                    [$class: 'RelativeTargetDirectory',
-                            relativeTargetDir: config.targetDir ?: '.']
+                    [$class: 'RelativeTargetDirectory', relativeTargetDir: config.targetDir ?: '.'],
+                    [$class: 'CloneOption', noTags: noTags, reference: '', shallow: shallow]
             ],
             submoduleCfg: [],
             userRemoteConfigs: [
