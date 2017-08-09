@@ -5,6 +5,7 @@ def call(String gitRepoUrl, String gitRef, String checkoutDir, String branchName
         repoUrl = gitRepoUrl
         branch = gitRef
         targetDir = checkoutDir
+        shallow = true
     }
     dir(checkoutDir) {
         sshagent(['jenkinsgithub']) {
