@@ -14,7 +14,8 @@ def call(body) {
     for (def repo in utils.mapToList(repos)) {
         fhcapRepoAdd {
             name = repo[0]
-            url = repo[1]
+            url = repo[1]['url']
+            clustersDir = repo[1]['clustersDir']
         }
     }
 }
