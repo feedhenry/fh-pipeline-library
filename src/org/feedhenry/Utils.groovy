@@ -49,3 +49,23 @@ static def getDate() {
     SimpleDateFormat yearMonthDateHourMin = new SimpleDateFormat("yyyyMMddHHmm")
     return yearMonthDateHourMin.format(now)
 }
+
+@NonCPS
+def filterRhmap4Components(components) {
+    components.findAll({ k, v -> v?.labels?.rhmap4 == true })
+}
+
+@NonCPS
+def filterRhmap3Components(components) {
+    components.findAll({ k, v -> v?.labels?.rhmap3 == true })
+}
+
+@NonCPS
+def filterTemplateAppComponents(components) {
+    components.findAll({ k, v -> v?.type == "template-apps" })
+}
+
+@NonCPS
+def filterPlatformComponents(components) {
+    components.findAll({ k, v -> v?.type == "platform" })
+}
