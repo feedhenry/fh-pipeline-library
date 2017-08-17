@@ -1,14 +1,27 @@
 #!/usr/bin/groovy
+
 import groovy.json.JsonSlurperClassic
 
-def call(componentConfigs, configGitRepo, configGitRef) {
+def call(componentConfigs, configGitRepo, configGitRef, tryMasterOnFail = false) {
     node {
         step([$class: 'WsCleanup'])
 
-        checkoutGitRepo {
-            repoUrl = configGitRepo
-            branch = configGitRef
-            targetDir = 'product_releases'
+        try {
+            checkoutGitRepo {
+                repoUrl = configGitRepo
+                branch = configGitRef
+                targetDir = 'product_releases'
+            }
+        } catch (Exception e) {
+            if (tryMasterOnFail) {
+                checkoutGitRepo {
+                    repoUrl = configGitRepo
+                    branch = 'master'
+                    targetDir = 'product_releases'
+                }
+            } else {
+                throw e
+            }
         }
 
         dir('product_releases') {
