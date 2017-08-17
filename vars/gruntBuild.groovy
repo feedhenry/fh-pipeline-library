@@ -9,6 +9,10 @@ def call(body) {
     def name = config.name
     def distCmd = config.distCmd ?: 'fh:dist'
 
+    // TODO: install this from npmjs once it's published
+    sh "npm install -g https://github.com/bucharest-gold/license-reporter"
+    sh "license-reporter --ignore-version-range --all --silent --file licenses.xml"
+
     gruntCmd {
         cmd = distCmd
     }
