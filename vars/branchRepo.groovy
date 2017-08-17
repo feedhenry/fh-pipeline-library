@@ -1,6 +1,6 @@
 #!/usr/bin/groovy
 
-def call(String gitRepoUrl, String gitRef, String checkoutDir, String branchName, Closure body = {}) {
+def call(String gitRepoUrl, String gitRef, String checkoutDir, String branchName, boolean useExistingBranch = false, Closure body = {}) {
     checkoutGitRepo {
         repoUrl = gitRepoUrl
         branch = gitRef
@@ -12,9 +12,11 @@ def call(String gitRepoUrl, String gitRef, String checkoutDir, String branchName
         def existingBranchCommitHash = sh(returnStdout: true, script: "git ls-remote origin refs/heads/${branchName} | cut -f 1").trim()
 
         if (existingBranchCommitHash) {
-            if (existingBranchCommitHash == latestCommitHash) {
+            sh "git checkout ${branchName}"
+            if(useExistingBranch) {
+                print "Branch ${branchName} already exists and useExistingBranch is true, can continue!"
+            } else if (existingBranchCommitHash == latestCommitHash) {
                 print "Branch ${branchName} already exists and latestCommitHash(${latestCommitHash}) is the HEAD, can continue!"
-                sh "git checkout ${branchName}"
             } else {
                 print "Branch ${branchName} already exists but latestCommitHash(${latestCommitHash}) is not the HEAD, can't continue!"
                 sh('exit 1')
