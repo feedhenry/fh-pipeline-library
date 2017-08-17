@@ -11,30 +11,33 @@ def ghApiRequest(String endpoint, String httpMethod = 'GET', String requestBody 
             contentType: 'APPLICATION_JSON',
             requestBody: requestBody,
             customHeaders: customHeaders,
-            url: url
+            url: url,
+            validResponseCodes: '100:399,404'
     return response
 }
 
 String ghBranchProtectionApiRequest(String branchName, String ghOrg, String ghRepo, String httpMethod = 'GET', String requestBody = null, String credentialsId = 'githubautomatron') {
-    def branchStatus = "${branchName} on ${ghRepo} in ${ghOrg} : UNKNOWN"
-    def response = ghApiRequest("/repos/${ghOrg}/${ghRepo}/branches/${branchName}/protection",
-            httpMethod,
-            requestBody,
-            credentialsId,
-            [[name: 'Accept', value: 'application/vnd.github.loki-preview+json']]
-    )
-    def ghStatusRaw = response.content
+    def branchStatus = "UNKNOWN"
+    try {
+        def response = ghApiRequest("/repos/${ghOrg}/${ghRepo}/branches/${branchName}/protection",
+                httpMethod,
+                requestBody,
+                credentialsId,
+                [[name: 'Accept', value: 'application/vnd.github.loki-preview+json']]
+        )
+        println("Status: " + response.status)
+        println("Content: " + response.content)
 
-    println("Status: " + response.status)
-    println("Content: " + response.content)
-
-    if (ghStatusRaw) {
-        def ghStatus = new JsonSlurperClassic().parseText ghStatusRaw
-        if (ghStatus && ghStatus['message']) {
-            branchStatus = "${branchName} on ${ghRepo} in ${ghOrg} : ${ghStatus['message']}"
-        } else {
-            branchStatus = "${branchName} on ${ghRepo} in ${ghOrg} : Branch Protected"
+        if (response.content) {
+            def ghStatus = new JsonSlurperClassic().parseText response.content
+            if (ghStatus && ghStatus['message']) {
+                branchStatus = ghStatus['message']
+            } else {
+                branchStatus = "Branch Protected"
+            }
         }
+    } catch (Exception e) {
+        branchStatus = "EXCEPTION"
     }
-    return branchStatus
+    return "${branchName} on ${ghRepo} in ${ghOrg} : ${branchStatus}"
 }
