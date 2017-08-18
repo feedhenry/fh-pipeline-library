@@ -27,6 +27,7 @@ module.exports = function(grunt) {
         var parsedUrl = url.parse(obj.githubUrl, true, true);
         var tarry = parsedUrl.path.replace(/.git$/, \'\').replace(/^\\//, \'\').split(\'/\');
         templateAppConfig.githubUrl = obj.githubUrl;
+        templateAppConfig.baseBranch = obj.repoBranch;
         templateAppConfig.org = tarry[0];
         templateAppConfig.name = tarry[1];
         templateAppConfig.jira = "";
