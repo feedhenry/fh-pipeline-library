@@ -9,15 +9,15 @@ static def getReleaseBranch(version) {
 }
 
 static def getReleaseTag(version, candidate=null) {
-    if(candidate) {
-        "release-${version}-${candidate}"
+    if (candidate) {
+        return "release-${version}-${candidate}"
     } else {
-        "release-${version}"
+        return "release-${version}"
     }
 }
 
 static def getBuildInfoFileName() {
-    'build-info.json'
+    return 'build-info.json'
 }
 
 static def mapToList(depmap) {
@@ -25,7 +25,7 @@ static def mapToList(depmap) {
     for (entry in depmap) {
         dlist.add([entry.key, entry.value])
     }
-    dlist
+    return dlist
 }
 
 static def mapToOptionsString(map) {
@@ -33,7 +33,7 @@ static def mapToOptionsString(map) {
     for (def o in mapToList(map)) {
         optionsArray << "${o[0]}:${o[1]}"
     }
-    optionsArray.join(" ")
+    return optionsArray.join(" ")
 }
 
 static def getArtifactsDir(name) {
@@ -48,4 +48,16 @@ static def getDate() {
     Date now = new Date()
     SimpleDateFormat yearMonthDateHourMin = new SimpleDateFormat("yyyyMMddHHmm")
     return yearMonthDateHourMin.format(now)
+}
+
+static String sanitizeK8sObjectName(String s, int maxLength=63) {
+    return s.replace('_', '-')
+        .replace('.', '-')
+        .replace('/', '-')
+        .toLowerCase()
+        .reverse()
+        .take(maxLength)
+        .replaceAll("^-+", "")
+        .reverse()
+        .replaceAll("^-+", "")
 }

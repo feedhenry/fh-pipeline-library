@@ -1,3 +1,5 @@
+import org.feedhenry.Utils
+
 def call(List<String> services, Closure body) {
     List<String> names = getNames(services)
     try {
@@ -79,21 +81,10 @@ def waitForServiceToBeReady(String service, String name) {
     }
 }
 
-String sanitizeObjectName(String s) {
-    s.replace('_', '-')
-        .replace('.', '-')
-        .toLowerCase()
-        .reverse()
-        .take(23)
-        .replaceAll("^-+", "")
-        .reverse()
-        .replaceAll("^-+", "")
-}
-
 Map<String, String> getNames(List<String> services) {
     List<String> names = []
     for (int i = 0; i < services.size(); i++) {
-        names += sanitizeObjectName("${env.BUILD_TAG}-${services[i]}")
+        names += Utils.sanitizeK8sObjectName("${env.BUILD_TAG}-${services[i]}", 23)
     }
     return names
 }
