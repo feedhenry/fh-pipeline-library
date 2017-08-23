@@ -72,8 +72,16 @@ node {
         def configGitRepo = "git@github.com:feedhenry/product_releases.git"
         def configGitRef = 'master'
 
-        componentConfigs = [:]
-        getComponentConfigs(componentConfigs, configGitRepo, configGitRef)
+        def componentConfigs = getComponentConfigs(configGitRepo, configGitRef)
+
+        print componentConfigs
+    }
+
+    testStage('getTemplateAppComponentConfigs') {
+        def configGitRepo = "git@github.com:feedhenry/fh-template-apps.git"
+        def configGitRef = 'master'
+
+        def componentConfigs = getTemplateAppComponentConfigs(configGitRepo, configGitRef)
 
         print componentConfigs
     }
