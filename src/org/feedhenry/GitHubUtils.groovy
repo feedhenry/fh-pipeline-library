@@ -3,7 +3,7 @@ package org.feedhenry
 
 import groovy.json.JsonSlurperClassic
 
-def ghApiRequest(String endpoint, String httpMethod = 'GET', String requestBody = null, String credentialsId = 'githubautomatron', customHeaders = []) {
+def ghApiRequest(String endpoint, String httpMethod = 'GET', String requestBody = null, String credentialsId = 'githubautomatron', customHeaders = [], validResponseCodes = '100:399') {
     //Requires this plugin to be installed https://plugins.jenkins.io/http_request
     def url = "https://api.github.com${endpoint}"
     response = httpRequest httpMode: httpMethod,
@@ -12,7 +12,7 @@ def ghApiRequest(String endpoint, String httpMethod = 'GET', String requestBody 
             requestBody: requestBody,
             customHeaders: customHeaders,
             url: url,
-            validResponseCodes: '100:399,404'
+            validResponseCodes: validResponseCodes
     return response
 }
 
@@ -23,7 +23,8 @@ String ghBranchProtectionApiRequest(String branchName, String ghOrg, String ghRe
                 httpMethod,
                 requestBody,
                 credentialsId,
-                [[name: 'Accept', value: 'application/vnd.github.loki-preview+json']]
+                [[name: 'Accept', value: 'application/vnd.github.loki-preview+json']],
+                '100:399,404'
         )
         println("Status: " + response.status)
         println("Content: " + response.content)
