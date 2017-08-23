@@ -4,7 +4,7 @@ import org.feedhenry.Utils
 
 def call(configGitRepo, configGitRef, tryMasterOnFail = false) {
     def componentConfigs = [:]
-    node {
+    node('nodejs') {
         step([$class: 'WsCleanup'])
 
         def utils = new Utils()
@@ -13,7 +13,6 @@ def call(configGitRepo, configGitRef, tryMasterOnFail = false) {
             checkoutGitRepo {
                 repoUrl = configGitRepo
                 branch = configGitRef
-                targetDir = 'product_releases'
                 shallow = true
             }
         } catch (Exception e) {
@@ -21,7 +20,6 @@ def call(configGitRepo, configGitRef, tryMasterOnFail = false) {
                 checkoutGitRepo {
                     repoUrl = configGitRepo
                     branch = 'master'
-                    targetDir = 'product_releases'
                     shallow = true
                 }
             } else {
@@ -29,9 +27,14 @@ def call(configGitRepo, configGitRef, tryMasterOnFail = false) {
             }
         }
 
-        dir('product_releases') {
-            componentConfigs = utils.parseComponentsFile('COMPONENTS.json', 'platform')
-        }
+        writeTemplateAppsConfigGruntTask()
+
+        sh('npm install --ignore-scripts')
+        sh('npm install grunt-cli -g')
+
+        sh("grunt configs --file-name 'TEMPLATE_APP_COMPONENTS.json'")
+
+        componentConfigs = utils.parseComponentsFile('TEMPLATE_APP_COMPONENTS.json', 'template-apps')
     }
     return componentConfigs
 }
