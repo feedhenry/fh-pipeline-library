@@ -8,6 +8,8 @@ def call (name, to) {
         "name": "${name}"
     },
     "spec": {
+        "successfulBuildsHistoryLimit": 1,
+        "failedBuildsHistoryLimit": 1,
         "output": {
           "to": ${JsonOutput.toJson(to)}
         },
