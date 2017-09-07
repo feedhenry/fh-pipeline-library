@@ -12,9 +12,9 @@ def call(String jsonDefinition) {
             if (e.getMessage().contains("already exists")) {
                 println "${kind} already exists, updating"
                 try {
-                  openshift.replace definition
+                    openshift.replace definition
                 } catch (Exception e2) {
-                  error "${kind} update failed with : ${e2}"
+                    error "${kind} update failed with : ${e2}"
                 }
             } else {
                 error "${kind} creation failed with something other than 'already exists': ${e}"
