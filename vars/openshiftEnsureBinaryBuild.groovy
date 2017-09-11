@@ -1,6 +1,6 @@
 import groovy.json.JsonOutput
 
-def call (name, to) {
+def call(name, to, dockerfilePath = '.') {
   def pushingBuildTemplate = """{
     "apiVersion": "v1",
     "kind": "BuildConfig",
@@ -21,7 +21,7 @@ def call (name, to) {
         "strategy": {
             "type": "Docker",
             "dockerStrategy": {
-                "dockerfilePath": "."
+                "dockerfilePath": "${dockerfilePath}"
             }
         }
     }
