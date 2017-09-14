@@ -1,8 +1,8 @@
 #!/usr/bin/groovy
 package org.feedhenry
 
+import com.cloudbees.groovy.cps.NonCPS
 import groovy.json.JsonSlurperClassic
-
 import java.text.SimpleDateFormat
 
 static def getReleaseBranch(version) {
