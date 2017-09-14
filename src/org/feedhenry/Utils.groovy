@@ -87,6 +87,16 @@ def filterRhmap4Components(components) {
 }
 
 @NonCPS
+def filterRhmap4CoreComponents(components) {
+    components.findAll({ k, v -> v?.labels?.rhmap4 == true && v?.labels?.core == true })
+}
+
+@NonCPS
+def filterRhmap4MbaasComponents(components) {
+    components.findAll({ k, v -> v?.labels?.rhmap4 == true && v?.labels?.mbaas == true })
+}
+
+@NonCPS
 def filterRhmap3Components(components) {
     components.findAll({ k, v -> v?.labels?.rhmap3 == true })
 }
