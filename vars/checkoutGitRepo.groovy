@@ -1,16 +1,10 @@
 #!/usr/bin/groovy
 
-def call(body) {
-    // evaluate the body block, and collect configuration into the object
-    def config = [:]
-    body.resolveStrategy = Closure.DELEGATE_FIRST
-    body.delegate = config
-    body()
-
-    def noTags = config.noTags  ?: false
-    def shallow = config.shallow  ?: false
-
-    checkout([$class: 'GitSCM',
+def checkoutWithConfig(config) {
+   def noTags = config.noTags  ?: false
+   def shallow = config.shallow  ?: false
+   
+   checkout([$class: 'GitSCM',
             branches: [[name: config.branch]],
             doGenerateSubmoduleConfigurations: false,
             extensions: [
@@ -25,4 +19,26 @@ def call(body) {
                     ]
             ]
     ])
+}
+
+def call(body) {
+    // evaluate the body block, and collect configuration into the object
+    def config = [:]
+    body.resolveStrategy = Closure.DELEGATE_FIRST
+    body.delegate = config
+    body()
+
+    def backupBranch = config.backupBranch  ?: false
+
+    try {
+      checkoutWithConfig(config)
+    } catch (Exception e) {
+        if (backupBranch) {
+          config.branch = backupBranch
+          checkoutWithConfig(config)
+        } else {
+          throw e
+        }
+    }
+    
 }
