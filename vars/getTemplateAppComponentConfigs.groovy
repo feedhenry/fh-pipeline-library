@@ -8,23 +8,17 @@ def call(configGitRepo, configGitRef, tryMasterOnFail = false) {
         step([$class: 'WsCleanup'])
 
         def utils = new Utils()
+        def backupRef = false;
+        
+        if(tryMasterOnFail) {
+           backupRef = 'master' 
+        }
 
-        try {
-            checkoutGitRepo {
-                repoUrl = configGitRepo
-                branch = configGitRef
-                shallow = true
-            }
-        } catch (Exception e) {
-            if (tryMasterOnFail) {
-                checkoutGitRepo {
-                    repoUrl = configGitRepo
-                    branch = 'master'
-                    shallow = true
-                }
-            } else {
-                throw e
-            }
+        checkoutGitRepo {
+            repoUrl = configGitRepo
+            branch = configGitRef
+            shallow = true
+            backupBranch = backupRef
         }
 
         writeTemplateAppsConfigGruntTask()
