@@ -1,11 +1,25 @@
 #!/usr/bin/groovy
 
+def checkoutFhcapCli(gitRepo = 'git@github.com:fheng/fhcap-cli.git', gitRef = 'master', install = false) {
+    dir('fhcap-cli') {
+        checkoutGitRepo {
+            repoUrl = gitRepo
+            branch = gitRef
+            shallow = true
+            noTags = true
+        }
+        if (install) {
+            sh "rake install"
+        }
+    }
+}
+
 def call(Map parameters = [:], body) {
 
-    def labels = [parameters.get('label','ruby-fhcap')]
-    labels += parameters.get('labels',[]) 
-    def provider = parameters.get('provider')  ?: [:]
-    labels += provider.get('labels',[])
+    def labels = [parameters.get('label', 'ruby-fhcap')]
+    labels += parameters.get('labels', [])
+    def provider = parameters.get('provider') ?: [:]
+    labels += provider.get('labels', [])
 
     node(withLabels(labels)) {
 
@@ -32,14 +46,10 @@ def call(Map parameters = [:], body) {
                 env.RUBYOPT = "-W0"
 
                 if (gitRepo) {
-                    dir('fhcap-cli') {
-                        checkoutGitRepo {
-                            repoUrl = gitRepo
-                            branch = gitRef
-                        }
-                        sh "rake install"
-                    }
+                    checkoutFhcapCli(gitRepo, gitRef, true)
                 } else {
+                    //This is only here to get git clones to work correctly, and avoid 'Host key verification failed' errors
+                    checkoutFhcapCli()
                     if (installLatest) {
                         sh "gem install fhcap-cli --no-ri --no-rdoc"
                     }
