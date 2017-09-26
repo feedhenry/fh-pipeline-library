@@ -1,12 +1,15 @@
 #!/usr/bin/groovy
 
 def call(String name, String version, String dockerHubOrg, String dockerHubRepo = name, String credentialId = "dockerhubjenkins", String fromDir = './docker', Closure body = {}) {
-    def pushConfig = [
-            "kind": "DockerImage",
-            "name": "docker.io/${dockerHubOrg}/${dockerHubRepo}:${version}-${env.BUILD_NUMBER}"
+
+    echo "Deprecated: this should no longer be needed, use `buildWithDockerStrategy` instead"
+
+    final Map params = [
+        fromDir: fromDir,
+        buildConfigName: name,
+        imageRepoSecret: "dockerhub",
+        outputImage: "docker.io/${dockerHubOrg}/${dockerHubRepo}:${version}-${env.BUILD_NUMBER}"
     ]
 
-    openshiftEnsureBinaryBuild("${name}-bc", pushConfig)
-    body()
-    sh "oc start-build ${name}-bc --follow=true --from-dir ${fromDir}"
+    buildWithDockerStrategy params
 }
