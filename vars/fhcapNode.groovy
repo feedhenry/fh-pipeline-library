@@ -59,7 +59,7 @@ def call(Map parameters = [:], body) {
                 env.PATH = "${PATH}:/home/jenkins/bin"
                 env.FHCAP_CFG_FILE = configFile
 
-                sh "yes | fhcap setup --repos-dir ${WORKSPACE} --fh-src-dir ${WORKSPACE} --knife-dir ${WORKSPACE} --empty-config"
+                sh "yes | fhcap setup --repos-dir ${WORKSPACE} --fh-src-dir ${WORKSPACE}"
 
                 if (fhcapRepos) {
                     fhcapRepoAddBatch {
