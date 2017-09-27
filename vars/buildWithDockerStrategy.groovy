@@ -44,6 +44,6 @@ def call(Map params) {
 
     openshift.withCluster() {
         openshift.apply buildConfig
-        openshift.startBuild buildConfigName, "--follow=${follow}", "--from-dir=${fromDir}"
+        sh "oc start-build ${buildConfigName} --follow=${follow} --from-dir=${fromDir}"
     }
 }
