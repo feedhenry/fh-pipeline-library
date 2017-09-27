@@ -13,7 +13,7 @@ def call(body) {
         cmd = distCmd
     }
 
-    def pkgVersion = sh(returnStdout: true, script: "node -p -e \"require('./package.json').version\"").trim()
+    def pkgVersion = getBaseVersionFromPackageJson()
     def buildInfoFileName = writeBuildInfo(name, "${pkgVersion}-${env.BUILD_NUMBER}")
 
     archiveArtifacts "dist/${name}*.tar.gz, ${buildInfoFileName}"

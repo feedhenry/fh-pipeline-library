@@ -1,7 +1,16 @@
 #!/usr/bin/groovy
 
-def call(name, dockerHubOrg = "feedhenry", dockerHubRepo = name, credentialId = "dockerhubjenkins") {
-    def version = sh(returnStdout: true, script: "node -p -e \"require('./package.json').version\"").trim().split('-')[0]
+def call(String name, String dockerHubOrg = "feedhenry", String dockerHubRepo = name, String credentialId = "dockerhubjenkins") {
     sh "cp ./dist/fh-*x64.tar.gz docker/"
-    dockerBinaryBuild(name, version, dockerHubOrg, dockerHubRepo, credentialId, './docker')
+
+    final String version = getBaseVersionFromPackageJson()
+    final String tag = "${version}-${env.BUILD_NUMBER}"
+    final Map params = [
+        fromDir: "./docker",
+        buildConfigName: name,
+        imageRepoSecret: "dockerhub",
+        outputImage: "docker.io/${dockerHubOrg}/${dockerHubRepo}:${tag}"
+    ]
+
+    buildWithDockerStrategy params
 }

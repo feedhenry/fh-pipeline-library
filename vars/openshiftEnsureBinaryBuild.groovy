@@ -1,6 +1,9 @@
 import groovy.json.JsonOutput
 
 def call (name, to) {
+
+  echo "Deprecated: this should no longer be needed, use `buildWithDockerStrategy` instead"
+
   def pushingBuildTemplate = """{
     "apiVersion": "v1",
     "kind": "BuildConfig",
