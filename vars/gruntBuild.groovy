@@ -16,5 +16,6 @@ def call(body) {
     def pkgVersion = getBaseVersionFromPackageJson()
     def buildInfoFileName = writeBuildInfo(name, "${pkgVersion}-${env.BUILD_NUMBER}")
 
-    archiveArtifacts "dist/${name}*.tar.gz, ${buildInfoFileName}"
+    sh "mv ${buildInfoFileName} dist/"
+    archiveArtifacts "dist/${name}*.tar.gz, dist/${buildInfoFileName}"
 }
