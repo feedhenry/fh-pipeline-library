@@ -30,10 +30,10 @@ static def mapToList(depmap) {
     dlist
 }
 
-static def mapToOptionsString(map) {
+static def mapToOptionsString(map, delim=':') {
     def optionsArray = []
     for (def o in mapToList(map)) {
-        optionsArray << "${o[0]}:${o[1]}"
+        optionsArray << (o - '' - null).join(delim)
     }
     optionsArray.join(" ")
 }
