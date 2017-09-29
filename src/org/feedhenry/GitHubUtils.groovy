@@ -67,6 +67,8 @@ GHPullRequest ghFindOrCreatePullRequest(GHRepository repo, String head, String b
     if (pr) {
         println "Found already open PR on ${repo.getName()} head:${head} base:${base} - ${pr.getHtmlUrl()}"
     } else {
+        //head for the query above requires the user e.g. fheng:branch_name, but here we only want branch_name see https://developer.github.com/v3/pulls/#list-pull-requests
+        head = head.split(':').last()
         pr = repo.createPullRequest(title, head, base, body)
         println "Opened new PR on ${repo.getName()} head:${head} base:${base} - ${pr.getHtmlUrl()}"
     }
