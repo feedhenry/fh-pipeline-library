@@ -1,5 +1,7 @@
 #!/usr/bin/groovy
 
+import org.feedhenry.Utils
+
 def checkoutFhcapCli(gitRepo = 'git@github.com:fheng/fhcap-cli.git', gitRef = 'master', install = false) {
     dir('fhcap-cli') {
         checkoutGitRepo {
@@ -23,6 +25,7 @@ def call(Map parameters = [:], body) {
 
     node(withLabels(labels)) {
 
+        def utils = new Utils()
         def installLatest = parameters.get('installLatest', false)
         def credentialsId = parameters.get('credentialsId', 'jenkinsgithub')
         def configFile = parameters.get('configFile', "${WORKSPACE}/fhcap.json")
@@ -31,6 +34,11 @@ def call(Map parameters = [:], body) {
         def gitUserName = parameters.get('gitUserName', null)
         def gitUserEmail = parameters.get('gitUserEmail', null)
         def fhcapRepos = parameters.get('fhcapRepos', null)
+        def workDir = parameters.get('workDir', '.')
+        def setupOpts = parameters.get('setupOpts', [:])
+        def defaultSetupOts = ['--repos-dir': WORKSPACE, '--fh-src-dir': WORKSPACE, '--knife-dir': WORKSPACE]
+
+        String setupOptsStr = utils.mapToOptionsString(defaultSetupOts + setupOpts, ' ')
 
         step([$class: 'WsCleanup'])
         sshagent([credentialsId]) {
@@ -59,7 +67,7 @@ def call(Map parameters = [:], body) {
                 env.PATH = "${PATH}:/home/jenkins/bin"
                 env.FHCAP_CFG_FILE = configFile
 
-                sh "yes | fhcap setup --repos-dir ${WORKSPACE} --fh-src-dir ${WORKSPACE}"
+                sh "yes | fhcap setup ${setupOptsStr}"
 
                 if (fhcapRepos) {
                     fhcapRepoAddBatch {
@@ -67,7 +75,9 @@ def call(Map parameters = [:], body) {
                     }
                 }
 
-                body()
+                dir(workDir) {
+                    body()
+                }
             }
         }
     }
