@@ -63,7 +63,7 @@ def createOpenshiftResources(List<String> services, List<String> names) {
 }
 
 def waitForServiceToBeReady(String service, String name) {
-    if (service == 'mongodb') {
+    if (service == 'mongodb' || service == 'mongodb32') {
         writeFile(
             file: 'checkMongo.sh',
             text: "echo 'daves\ndaves()\n/' | curl -v telnet://${name}:27017/"
@@ -100,7 +100,7 @@ Map<String, String> getNames(List<String> services) {
 
 List<String> env(List<String> services, List<String> names) {
     List<String> out = []
-    if (services.contains('mongodb')) {
+    if (services.contains('mongodb') || services.contains('mongodb32')) {
         out.add("MONGODB_HOST=${names[services.indexOf('mongodb')]}")
     }
     return out
@@ -155,6 +155,53 @@ spec:
       - emptyDir: {}
         name: data
 """
+        case 'mongodb32':
+            return """
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: ${name}
+  labels:
+    name: ${name}
+spec:
+  replicas: 0
+  selector:
+    name: ${name}
+  strategy:
+    recreateParams:
+      timeoutSeconds: 600
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: ${name}
+    spec:
+      containers:
+      - image: docker.io/mongo:3.2
+        imagePullPolicy: IfNotPresent
+        name: mongodb
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /data/db
+          name: data
+        readinessProbe:
+          exec:
+            command:
+              - /bin/sh
+              - '-ic'
+              - echo 'db.stats().ok' | mongo 127.0.0.1:27017/admin
+          timeoutSeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+      - emptyDir: {}
+        name: data
+"""
         default:
             return ''
     }
@@ -163,6 +210,7 @@ spec:
 String getServiceYaml(String service, String name) {
     switch (service) {
         case 'mongodb':
+        case 'mongodb32':
             return """
 apiVersion: v1
 kind: Service
