@@ -81,6 +81,7 @@ def waitForServiceToBeReady(String service, String name) {
     }
 }
 
+@NonCPS
 String sanitizeObjectName(String s) {
     s.replace('_', '-')
         .replace('.', '-')
@@ -92,12 +93,9 @@ String sanitizeObjectName(String s) {
         .replaceAll("^-+", "")
 }
 
-Map<String, String> getNames(List<String> services) {
-    List<String> names = []
-    for (int i = 0; i < services.size(); i++) {
-        names += sanitizeObjectName("${env.BUILD_TAG}-${services[i]}")
-    }
-    return names
+@NonCPS
+List<String> getNames(List<String> services) {
+    return services.collect { sanitizeObjectName("${env.BUILD_TAG}-${it}") }
 }
 
 @NonCPS
