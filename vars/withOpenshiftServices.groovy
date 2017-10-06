@@ -1,3 +1,5 @@
+import com.cloudbees.groovy.cps.NonCPS
+
 def call(List<String> services, Closure body) {
     List<String> names = getNames(services)
     try {
@@ -98,12 +100,13 @@ Map<String, String> getNames(List<String> services) {
     return names
 }
 
+@NonCPS
 List<String> env(List<String> services, List<String> names) {
-    List<String> out = []
-    if (services.contains('mongodb') || services.contains('mongodb32')) {
-        out.add("MONGODB_HOST=${names[services.indexOf('mongodb')]}")
-    }
-    return out
+    final Map<String, List<String>> svcToEnv = [
+        'mongodb': ["MONGODB_HOST=${names[services.indexOf('mongodb')]}"],
+        'mongodb32': ["MONGODB_HOST=${names[services.indexOf('mongodb32')]}"]
+    ]
+    return services.collectMany { svcToEnv[it] }
 }
 
 String getDeploymentConfigYaml(String service, String name) {
