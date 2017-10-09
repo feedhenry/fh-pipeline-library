@@ -1,3 +1,5 @@
+import com.cloudbees.groovy.cps.NonCPS
+
 def call(List<String> services, Closure body) {
     List<String> names = getNames(services)
     try {
@@ -63,7 +65,7 @@ def createOpenshiftResources(List<String> services, List<String> names) {
 }
 
 def waitForServiceToBeReady(String service, String name) {
-    if (service == 'mongodb') {
+    if (service == 'mongodb' || service == 'mongodb32') {
         writeFile(
             file: 'checkMongo.sh',
             text: "echo 'daves\ndaves()\n/' | curl -v telnet://${name}:27017/"
@@ -79,6 +81,7 @@ def waitForServiceToBeReady(String service, String name) {
     }
 }
 
+@NonCPS
 String sanitizeObjectName(String s) {
     s.replace('_', '-')
         .replace('.', '-')
@@ -90,20 +93,18 @@ String sanitizeObjectName(String s) {
         .replaceAll("^-+", "")
 }
 
-Map<String, String> getNames(List<String> services) {
-    List<String> names = []
-    for (int i = 0; i < services.size(); i++) {
-        names += sanitizeObjectName("${env.BUILD_TAG}-${services[i]}")
-    }
-    return names
+@NonCPS
+List<String> getNames(List<String> services) {
+    return services.collect { sanitizeObjectName("${env.BUILD_TAG}-${it}") }
 }
 
+@NonCPS
 List<String> env(List<String> services, List<String> names) {
-    List<String> out = []
-    if (services.contains('mongodb')) {
-        out.add("MONGODB_HOST=${names[services.indexOf('mongodb')]}")
-    }
-    return out
+    final Map<String, List<String>> svcToEnv = [
+        'mongodb': ["MONGODB_HOST=${names[services.indexOf('mongodb')]}"],
+        'mongodb32': ["MONGODB_HOST=${names[services.indexOf('mongodb32')]}"]
+    ]
+    return services.collectMany { svcToEnv[it] }
 }
 
 String getDeploymentConfigYaml(String service, String name) {
@@ -155,6 +156,53 @@ spec:
       - emptyDir: {}
         name: data
 """
+        case 'mongodb32':
+            return """
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: ${name}
+  labels:
+    name: ${name}
+spec:
+  replicas: 0
+  selector:
+    name: ${name}
+  strategy:
+    recreateParams:
+      timeoutSeconds: 600
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: ${name}
+    spec:
+      containers:
+      - image: docker.io/mongo:3.2
+        imagePullPolicy: IfNotPresent
+        name: mongodb
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /data/db
+          name: data
+        readinessProbe:
+          exec:
+            command:
+              - /bin/sh
+              - '-ic'
+              - echo 'db.stats().ok' | mongo 127.0.0.1:27017/admin
+          timeoutSeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+      - emptyDir: {}
+        name: data
+"""
         default:
             return ''
     }
@@ -163,6 +211,7 @@ spec:
 String getServiceYaml(String service, String name) {
     switch (service) {
         case 'mongodb':
+        case 'mongodb32':
             return """
 apiVersion: v1
 kind: Service
