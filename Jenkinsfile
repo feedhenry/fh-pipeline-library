@@ -138,19 +138,4 @@ node {
         }
     }
 
-    testStage('stashComponentArtifacts') {
-        def componentName = getTestComponentName()
-        def componentConfig = getTestComponentConfigs()[componentName]
-        stashComponentArtifacts(componentName, 'master', componentConfig['buildJobName'])
-    }
-
-    testStage('unstashComponentArtifacts') {
-        def componentName = getTestComponentName()
-        unstashComponentArtifacts(componentName) { v, b ->
-            def componentVersion = v
-            def componentBuild = b
-            print componentVersion
-            print componentBuild
-        }
-    }
 }
