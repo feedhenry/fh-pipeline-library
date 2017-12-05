@@ -9,8 +9,6 @@ def call(body) {
     sh '''
         npm install --production
         npm ls
-        npm install -g https://github.com/bucharest-gold/license-reporter#v0.3.0
-        license-reporter --ignore-version-range --all --silent --file licenses.xml
         npm install
         npm install grunt-cli -g
       '''
