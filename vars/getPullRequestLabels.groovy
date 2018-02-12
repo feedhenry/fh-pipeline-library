@@ -32,7 +32,7 @@ def getLabels(int pr, String repository, String org, String gitHubCredentialsId)
             final GHOrganization ghOrganization = gitHub.getOrganization(org)
             def labels = ghOrganization.getRepository("mobile-cli").getPullRequest(72).getLabels();
 
-            return labels.collect (it.getName())
+            return labels.collect {it.getName()}
         }
     }
 }
@@ -43,12 +43,10 @@ def call(body) {
     body.delegate = config
     body()
 
-    def r = Pattern.compile(".*//.*/(?<org>.*)/(?<repo>.*)/pull/(?<id>.*)")
-    def m = r.matcher(env.CHANGE_URL)
-    m.matches()
-    def org = config.organization :? m.group("org")
-    def repo = config.repository :? m.group("repo")
-    def pr = config.pr ?: m.group("id")
+    def prnfo = getPullRequestInfo()
+    def org = config.organization ?: prnfo["org"]
+    def repo = config.repository ?: prnfo["repo"]
+    def pr = config.pr ?: prnfo["id"]
     def credentials = config.credentials ?: "githubjenkins"
    
     return getLabels(Integer.parseInt(pr), repo, org, credentials) 
