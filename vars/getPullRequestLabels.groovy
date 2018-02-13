@@ -30,7 +30,7 @@ def getLabels(int pr, String repository, String org, String gitHubCredentialsId)
                 .build()
 
             final GHOrganization ghOrganization = gitHub.getOrganization(org)
-            def labels = ghOrganization.getRepository("mobile-cli").getPullRequest(pr).getLabels();
+            def labels = ghOrganization.getRepository(repository).getPullRequest(pr).getLabels();
 
             return labels.collect {it.getName()}
         }
