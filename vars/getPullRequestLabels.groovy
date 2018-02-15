@@ -49,5 +49,10 @@ def call(body) {
     def pr = config.pr ?: prnfo["id"]
     def credentials = config.credentials ?: "githubjenkins"
    
-    return getLabels(Integer.parseInt(pr), repo, org, credentials) 
+    try {
+      return getLabels(Integer.parseInt(pr), repo, org, credentials) 
+    } catch (err) {
+      print "Problem while getting labels from ${org} ${repo} ${pr}, returning empty list"
+      return []
+    }
 }
