@@ -138,4 +138,23 @@ node {
         }
     }
 
+    testStage('Koji') {
+        String kojiUrl = "https://koji.fedoraproject.org/kojihub"
+        def koji = fhPipelineLibrary.org.feedhenry.Koji.new(kojiUrl)
+
+        // If this starts failing in a few years, update with a new build from here:
+        // https://koji.fedoraproject.org/koji/packageinfo?packageID=8
+        String name    = "kernel"
+        String version = "4.15.2"
+        String release = "301.fc27"
+        Map<String, String> aKernelBuild = koji.getBuild("${name}-${version}-${release}")
+
+        println aKernelBuild
+
+        assert aKernelBuild.name    == name
+        assert aKernelBuild.version == version
+        assert aKernelBuild.release == release
+
+        assert koji.listArchives(aKernelBuild.build_id) == []
+    }
 }
