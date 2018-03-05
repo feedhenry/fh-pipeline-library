@@ -30,6 +30,12 @@ class Koji implements Serializable {
     }
 
     @NonCPS
+    List<Map<String, String>> listBuilds(Integer packageID) {
+        final XMLRPCServerProxy koji = new XMLRPCServerProxy(url, true)
+        return koji.listBuilds(packageID)
+    }
+
+    @NonCPS
     List<Map<String, String>> listArchives(int buildId) {
         final XMLRPCServerProxy koji = new XMLRPCServerProxy(url, true)
         return koji.listArchives(buildId)
