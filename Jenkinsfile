@@ -70,9 +70,7 @@ def testStage(name, body) {
 }
 
 node {
-    env.BRANCH_NAME = env.BRANCH_NAME ?: 'master'
-    String gitref = env.CHANGE_ID ? "pr/${env.CHANGE_ID}" : env.BRANCH_NAME
-    def fhPipelineLibrary = library("fh-pipeline-library@${gitref}")
+    def fhPipelineLibrary = library("fh-pipeline-library@${env.BRANCH_NAME}")
     def utils = fhPipelineLibrary.org.feedhenry.Utils.new()
 
     testStage('getReleaseBranch') {
