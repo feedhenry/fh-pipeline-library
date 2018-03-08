@@ -5,10 +5,10 @@ def call(Map parameters = [:], body) {
     // The logic is:
     // if labels exist, use those
     // if label exists, use that
-    // if nothing exitst use nodejs-ubuntu
+    // if nothing exist use nodejs6
     // in the future, we will replace this with:
     // def labels = parameters.get('labels',[])
-    def labels = parameters.get('labels',[parameters.get('label','nodejs-ubuntu')])
+    def labels = parameters.get('labels',[parameters.get('label','nodejs6')])
 
     node(withLabels(labels)) {
         step([$class: 'WsCleanup'])

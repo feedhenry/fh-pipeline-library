@@ -4,14 +4,14 @@ import org.feedhenry.Utils
 
 def call(configGitRepo, configGitRef, tryMasterOnFail = false) {
     def componentConfigs = [:]
-    node('nodejs') {
+    node('nodejs6') {
         step([$class: 'WsCleanup'])
 
         def utils = new Utils()
         def backupRef = false;
-        
+
         if(tryMasterOnFail) {
-           backupRef = 'master' 
+           backupRef = 'master'
         }
 
         checkoutGitRepo {
