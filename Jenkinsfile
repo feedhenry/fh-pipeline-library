@@ -81,6 +81,14 @@ node {
         print utils.getReleaseTag('1.2.3')
     }
 
+    testStage('getVersionString') {
+        assert utils.getVersionString('1.2.3', '') == '1.2.3'
+        assert utils.getVersionString('1.2.3', null) == '1.2.3'
+        assert utils.getVersionString('1.2.3', '1234567') == '1.2.3-1234567'
+        assert utils.getVersionString('', '1234567') == '1234567'
+        assert utils.getVersionString(null, '1234567') == '1234567'
+    }
+
     testStage('getArtifactsDir') {
         print utils.getArtifactsDir('fh-ngui')
     }

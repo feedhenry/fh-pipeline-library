@@ -18,6 +18,10 @@ static def getReleaseTag(version, candidate=null) {
     }
 }
 
+static String getVersionString(version, build) {
+    ([version, build] - null - '').join('-')
+}
+
 static def getBuildInfoFileName() {
     'build-info.json'
 }
