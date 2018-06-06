@@ -153,7 +153,7 @@ node {
         String name    = "kernel"
         String version = "4.15.2"
         String release = "301.fc27"
-        Map<String, String> aKernelBuild = koji.getBuild("${name}-${version}-${release}")
+        Map<String, String> aKernelBuild = koji.awaitBuild("${name}-${version}-${release}")
 
         println aKernelBuild
 
