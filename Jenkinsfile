@@ -63,7 +63,7 @@ def getTestComponentConfigs() {
 
 def testStage(name, body) {
     stage(name) {
-        step([$class: 'WsCleanup'])
+        cleanWs()
         print "#### test_${name} ####"
         body()
     }
@@ -75,6 +75,30 @@ node {
 
     testStage('getReleaseBranch') {
         print utils.getReleaseBranch('1.2.3')
+    }
+
+    testStage('gitRepoIsDirty') {
+        sh "mkdir repotest && cd repotest && git init"
+        dir("repotest") {
+            print "Default gitRepoIsDirty works?"
+            print utils.gitRepoIsDirty()
+
+            print "Override untrackedFiles in gitRepoIsDirty works?"
+            print utils.gitRepoIsDirty('normal')
+
+            print "Default thisGitRepoIsDirty works?"
+            print utils.thisGitRepoIsDirty(this)
+
+            print "Override untrackedFiles in thisGitRepoIsDirty works?"
+            print utils.thisGitRepoIsDirty(this, 'normal')
+
+            print "Static thisGitRepoIsDirty works?"
+            print fhPipelineLibrary.org.feedhenry.Utils.thisGitRepoIsDirty(this)
+
+            print "Static thisGitRepoIsDirty  with untrackedFiles override works?"
+            print fhPipelineLibrary.org.feedhenry.Utils.thisGitRepoIsDirty(this, 'normal')
+        }
+        sh "rm -rf repotest"
     }
 
     testStage('getReleaseTag') {
@@ -115,7 +139,7 @@ node {
     }
 
     testStage('getComponentConfigs') {
-        def configGitRepo = "git@github.com:feedhenry/product_releases.git"
+        def configGitRepo = "git@github.com:fheng/product_releases.git"
         def configGitRef = 'master'
 
         def componentConfigs = getComponentConfigs(configGitRepo, configGitRef)
