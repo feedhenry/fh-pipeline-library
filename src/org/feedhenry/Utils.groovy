@@ -46,8 +46,18 @@ static def getArtifactsDir(name) {
     return "${name}-artifacts"
 }
 
-def gitRepoIsDirty(untrackedFiles='no') {
-    return sh(returnStdout: true, script: "git status --porcelain --untracked-files=${untrackedFiles}").trim()
+String gitRepoIsDirty(untrackedFiles='no') {
+    return sh(
+        returnStdout: true,
+        script: "git status --porcelain --untracked-files=${untrackedFiles}"
+    )?.trim()
+}
+
+static String thisGitRepoIsDirty(steps, untrackedFiles='no') {
+    return steps.sh(
+        returnStdout: true,
+        script: "git status --porcelain --untracked-files=${untrackedFiles}"
+    )?.trim()
 }
 
 static def getDate() {
