@@ -26,7 +26,7 @@ def call(configGitRepo, configGitRef, tryMasterOnFail = false) {
         sh('npm install --ignore-scripts')
         sh('npm install grunt-cli -g')
 
-        sh("grunt configs --file-name 'TEMPLATE_APP_COMPONENTS.json'")
+        sh("grunt configs --file-name=TEMPLATE_APP_COMPONENTS.json")
 
         componentConfigs = utils.parseComponentsFile('TEMPLATE_APP_COMPONENTS.json', 'template-apps')
     }
