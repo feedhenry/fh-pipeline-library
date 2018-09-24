@@ -70,7 +70,7 @@ def testStage(name, body) {
 }
 
 node {
-    def fhPipelineLibrary = library("fh-pipeline-library@${env.BRANCH_NAME}")
+    def fhPipelineLibrary = library identifier: 'fh-pipeline-library@snapshot', retriever: legacySCM(scm)
     def utils = fhPipelineLibrary.org.feedhenry.Utils.new()
 
     testStage('getReleaseBranch') {
