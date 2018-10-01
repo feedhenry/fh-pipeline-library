@@ -41,6 +41,8 @@ def call(Map parameters = [:], body) {
 
             String setupOptsStr = utils.mapToOptionsString(defaultSetupOts + setupOpts, ' ')
 
+            String shallowFhcap = parameters.get('shallowFhcap', '')
+
             step([$class: 'WsCleanup'])
             sshagent([credentialsId]) {
 
@@ -61,6 +63,11 @@ def call(Map parameters = [:], body) {
                             sh "gem install fhcap-cli --no-ri --no-rdoc"
                         }
                     }
+
+                    if (shallowFhcap) {
+                        sh "git clone --depth 1 --branch ${shallowFhcap} --single-branch git@github.com:fheng/fhcap.git fhcap"
+                    }
+
                     sh "fhcap --version"
                     sh "yes | fhcap setup ${setupOptsStr}"
 
