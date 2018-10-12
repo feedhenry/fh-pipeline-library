@@ -44,6 +44,24 @@ def call(Map params) {
 
     openshift.withCluster() {
         openshift.apply buildConfig
-        sh "oc start-build ${buildConfigName} --follow=${follow} --from-dir=${fromDir}"
+
+        def buildSelector = openshift.startBuild "${buildConfigName} --from-dir=${fromDir}"
+
+        if (follow) {
+            List<String> donePhases = ["COMPLETE", "FAILED", "ERROR", "CANCELLED"]
+            timeout(30) {
+                buildSelector.untilEach(1) { build ->
+                    echo "Image Build Phase: ${build?.object()?.status?.phase}"
+                    return (donePhases.contains(build?.object()?.status?.phase?.toUpperCase()))
+                }
+                try {
+                    buildSelector.logs()
+                } catch(e) {
+                    echo "Couldn't stream the build logs"
+                }
+
+                assert buildSelector?.object()?.status?.phase?.toUpperCase() == "COMPLETE"
+            }
+        }
     }
 }
